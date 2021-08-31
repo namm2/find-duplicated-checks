@@ -25,21 +25,21 @@ func main() {
 	log.Println(len(checksList), "Total checks")
 
 	unique := make([]string, 0)
-	dup := make([]map[string]int, 0)
+	dupItem := make(map[string]int)
+	dupList := make([]map[string]int, 0)
 check:
 	for _, c := range checksList {
 		for _, j := range unique {
 			if c.Name == j {
-				m := make(map[string]int, 0)
-				m[c.Name] += 1
-				dup = append(dup, m)
+				dupItem[c.Name] += 1
+				dupList = append(dupList, dupItem)
 				continue check
 			}
 		}
 		unique = append(unique, c.Name)
 	}
-	if len(dup) > 0 {
-		log.Println("Found duplicated checks: ", dup)
+	if len(dupList) > 0 {
+		log.Println("Found duplicated checks: ", dupList)
 	}
 	log.Println(len(unique), "Unique checks")
 }

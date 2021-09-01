@@ -1,4 +1,4 @@
-module checks
+module github.com/namm2/find-duplicated-checks
 
 go 1.16
 

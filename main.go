@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"os"
+	"strings"
 
 	"github.com/russellcardullo/go-pingdom/pingdom"
 )
@@ -25,19 +26,31 @@ func main() {
 	log.Println(len(checksList), "Total checks")
 
 	unique := make([]string, 0)
-	dup := make(map[string]int)
+	dup := make(map[int]string)
+
 check:
 	for _, c := range checksList {
 		for _, j := range unique {
 			if c.Name == j {
-				dup[c.Name] += 1
+				dup[c.ID] = c.Name
 				continue check
 			}
 		}
 		unique = append(unique, c.Name)
 	}
 	if len(dup) > 0 {
-		log.Println("Found duplicated checks: ", dup)
+		log.Printf("Found %v duplicated checks: %v\n", len(dup), dup)
 	}
 	log.Println(len(unique), "Unique checks")
+
+	removeDups := os.Getenv("REMOVE_DUPLICATED")
+	if strings.ToLower(removeDups) == "true" {
+		log.Println("Start to remove duplicated checks:")
+		for id, name := range dup {
+			log.Printf("Removing %v with ID: %v\n", name, id)
+			removeCheck, err := client.Checks.Delete(id)
+			check(err)
+			log.Println(removeCheck)
+		}
+	}
 }
